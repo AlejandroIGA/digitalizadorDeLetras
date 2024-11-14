@@ -20,7 +20,7 @@ def rescaleFrame(frame, scale=.60):
     return cv.resize(frame, dimensions, interpolation=cv.INTER_CUBIC)
 
 # Cargar la imagen
-img = cv.imread("imgEjm.jpg")
+img = cv.imread("superficieIrregular.jpg")
 
 # Redimensionar la imagen (opcional)
 resizedImg = rescaleFrame(img)
@@ -44,8 +44,8 @@ for i in range(len(contours)):
 
         # Preprocesamiento
         gray = cv.cvtColor(crop_img, cv.COLOR_BGR2GRAY)
-        blur = cv.medianBlur(gray, 3)  # Filtro mediano
-        thresh = cv.adaptiveThreshold(blur, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 11, 2)  # Binarización adaptativa
+        #blur = cv.medianBlur(gray, 3)  # Filtro mediano
+        thresh = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 11, 2)  # Binarización adaptativa
 
         # Encontrar componentes conectados
         num_labels, labels, stats, centroids = cv.connectedComponentsWithStats(thresh, connectivity=8)

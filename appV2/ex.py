@@ -32,7 +32,7 @@ canny = cv.Canny(gray, 20, 100)
 
 # Encontrar contornos externos
 contours, hierarchy = cv.findContours(canny, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-
+print(len(contours))
 # Iterar sobre los contornos externos
 for cnt in contours:
     # Obtener el rectángulo delimitador del contorno
@@ -44,10 +44,10 @@ for cnt in contours:
     # Preprocesamiento (opcional)
     # ... (aquí puedes agregar tus pasos de preprocesamiento si los necesitas)
     gray = cv.cvtColor(crop_img, cv.COLOR_BGR2GRAY)
-    blur = cv.medianBlur(gray, 3)  # Filtro mediano
-    thresh = cv.adaptiveThreshold(blur, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 11, 2)  # Binarización adaptativa
+    #blur = cv.medianBlur(gray, 3)  # Filtro mediano
+    thresh = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 11, 2)  # Binarización adaptativa
 
-    scale_factor = 1.5  # Puedes ajustar este valor según tus necesidades
+    scale_factor = 5  # Puedes ajustar este valor según tus necesidades
     resized_image = cv.resize(crop_img , None, fx=scale_factor, fy=scale_factor, interpolation=cv.INTER_LINEAR)
 
     # Mostrar la imagen recortada (opcional)
