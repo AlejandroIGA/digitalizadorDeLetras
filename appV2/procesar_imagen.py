@@ -46,7 +46,4 @@ def rescaleFrame(frame, scale=.55):
     height = int(frame.shape[0] * scale)
     dimensions = (width, height)
 
-    # Mostrar la imagen redimensionada (opcional)
-    cv2.imshow('Imagen redimensionada', frame)
-
     return cv2.resize(frame, dimensions, interpolation=cv2.INTER_CUBIC)
