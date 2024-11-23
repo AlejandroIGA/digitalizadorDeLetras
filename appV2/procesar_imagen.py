@@ -13,6 +13,9 @@ def procesar_imagen(ruta_imagen):
     # Encontrar contornos
     contours, hierarchy = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
+    #Iniciar array para guardar las imagenes
+    imagenesRecortadas = []
+
     i = 0
     # Procesar contornos según el área o la jerarquía
     for cnt in contours:
@@ -23,6 +26,8 @@ def procesar_imagen(ruta_imagen):
 
         scale_factor = 1.5  # Puedes ajustar este valor según tus necesidades
         resized_image = cv2.resize(crop_img, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_LINEAR)
+        
+        imagenesRecortadas.append(resized_image);
             
         # Guardar cada contorno como imagen procesada
         cv2.imwrite(f"uploads/contour_{i}.jpg", resized_image)
@@ -31,6 +36,8 @@ def procesar_imagen(ruta_imagen):
     
     # Guardar la imagen procesada principal
     cv2.imwrite("uploads/imagen_procesada.jpg", resizedImg)
+
+    return imagenesRecortadas;
 
 def rescaleFrame(frame, scale=.55):
     """Redimensiona una imagen manteniendo la proporción.
