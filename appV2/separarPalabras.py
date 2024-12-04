@@ -15,8 +15,7 @@ def contar_palabras(ruta_imagen):
     # Cargar la imagen
     img = cv2.imread(ruta_imagen)
     if img is None:
-        raise ValueError("No se pudo cargar la imagen desde la ruta especificada.")
-    
+        raise ValueError("No se pudo cargar la imagen desde la ruta especificada.")    
     resized_img = rescaleFrame(img)  # Redimensionar la imagen para mejorar el procesamiento
 
     # Convertir a escala de grises
@@ -24,13 +23,11 @@ def contar_palabras(ruta_imagen):
 
     # Aplicar un umbral adaptativo para mejorar la visibilidad del texto
     _, thresh = cv2.threshold(gray, 205, 230, cv2.THRESH_BINARY_INV)
-
     # Aplicar dilatación para unir partes de texto que puedan estar separadas
     dilated = cv2.dilate(thresh, None, iterations=2)
 
     # Encontrar contornos
     contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
     # Contar las palabras
     num_palabras = 0
     for cnt in contours:
