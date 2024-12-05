@@ -3,7 +3,8 @@ from werkzeug.utils import secure_filename
 import os
 import zipfile
 import io
-from app import procesar_imagen, separarPalabras
+from app.procesar_imagen import procesar_imagen 
+from app.separarPalabras import contar_palabras
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB
