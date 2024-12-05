@@ -1,23 +1,20 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from werkzeug.utils import secure_filename
 import os
-from app import procesar_imagen, separarPalabras
- 
+import zipfile
+import procesar_imagen
+import separarPalabras  
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB
 
-# Crear la carpeta de subida si no existe
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 def allowed_file(filename):
-    # Verificar si el archivo tiene una extensión permitida.
     allowed_extensions = {'jpg', 'jpeg'}
-    if '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions:
-        return True
-    return False
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -35,17 +32,24 @@ def upload_file():
             file.save(filepath)
             
             try:
-                # Verificar el número de palabras en la imagen
                 num_palabras = separarPalabras.contar_palabras(filepath)
                 if num_palabras > 100:
-                    os.remove(filepath)  # Eliminar la imagen si excede el límite
-                    return f'La imagen contiene {num_palabras} palabras y no será procesada, cambie la imagen con texto menor a 100 palabras.'
+                    os.remove(filepath)
+                    return f'La imagen contiene {num_palabras} palabras y no será procesada. Cambie la imagen con texto menor a 100 palabras.'
                 
-                # Si tiene menos de 100 palabras, procesar la imagen
-                procesar_imagen.procesar_imagen(filepath)
-                return f'¡Archivo subido exitosamente! La imagen contiene {num_palabras} palabras.'
+                # Procesar la imagen y obtener rutas de las imágenes procesadas
+                image_paths = procesar_imagen.procesar_imagen(filepath)
+                
+                # Crear un archivo ZIP
+                zip_path = os.path.join(app.config['UPLOAD_FOLDER'], 'processed_images.zip')
+                with zipfile.ZipFile(zip_path, 'w') as zipf:
+                    for img_path in image_paths:
+                        zipf.write(img_path, os.path.basename(img_path))
+                
+                # Enviar el archivo ZIP al navegador
+                return send_file(zip_path, as_attachment=True)
             except ValueError as e:
-                return str(e)  # Devuelve el mensaje de error si no se pudo procesar la imagen
+                return str(e)
     return render_template('upload.html')
 
 if __name__ == "__main__":
