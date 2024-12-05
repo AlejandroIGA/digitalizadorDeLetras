@@ -2,8 +2,8 @@ from flask import Flask, render_template, request, send_file
 from werkzeug.utils import secure_filename
 import os
 import zipfile
-import procesar_imagen
-import separarPalabras  
+from app import procesar_imagen, separarPalabras
+  
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
