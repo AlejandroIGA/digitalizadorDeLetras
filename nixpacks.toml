@@ -1,2 +1,8 @@
 [phases.setup]
 runtime = "python"
+
+[phases.setup.systemPackages]
+packages = ["mesa", "mesa-libGL", "libGL"]
+
+[phases.install]
+commands = ["pip install -r requirements.txt"]
