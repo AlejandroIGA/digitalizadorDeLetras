@@ -29,7 +29,7 @@ def upload_file():
             file.save(filepath)
             
             try:
-                num_palabras = separarPalabras.contar_palabras(filepath)
+                num_palabras = contar_palabras(filepath)
                 if num_palabras > 100:
                     os.remove(filepath)
                     return f'La imagen contiene {num_palabras} palabras y no será procesada. Cambie la imagen con texto menor a 100 palabras.'
