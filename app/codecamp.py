@@ -28,7 +28,7 @@ gray = cv.cvtColor(resizedImg, cv.COLOR_BGR2GRAY)
 cv.imshow('Gray', gray)
 
 #Blur
-cv.imshow('Blur', blur)
+cv.imshow('Blur', cv.blur)
 
 #delay for a key to be press
 cv.waitKey(0)
