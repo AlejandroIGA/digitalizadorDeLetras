@@ -2,15 +2,11 @@ from flask import Flask, render_template, request, send_file
 from werkzeug.utils import secure_filename
 import os
 import zipfile
+import io
 from app import procesar_imagen, separarPalabras
-  
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB
-
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 def allowed_file(filename):
     allowed_extensions = {'jpg', 'jpeg'}
@@ -28,7 +24,7 @@ def upload_file():
             return 'Formato no permitido. Solo se permiten archivos JPG y JPEG.'
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            filepath = os.path.join('/tmp', filename)  # Guardar temporalmente en memoria
             file.save(filepath)
             
             try:
@@ -37,17 +33,25 @@ def upload_file():
                     os.remove(filepath)
                     return f'La imagen contiene {num_palabras} palabras y no será procesada. Cambie la imagen con texto menor a 100 palabras.'
                 
-                # Procesar la imagen y obtener rutas de las imágenes procesadas
-                image_paths = procesar_imagen.procesar_imagen(filepath)
+                # Procesar la imagen y obtener datos de las imágenes procesadas
+                images_data = procesar_imagen(filepath)
                 
-                # Crear un archivo ZIP
-                zip_path = os.path.join(app.config['UPLOAD_FOLDER'], 'processed_images.zip')
-                with zipfile.ZipFile(zip_path, 'w') as zipf:
-                    for img_path in image_paths:
-                        zipf.write(img_path, os.path.basename(img_path))
+                # Crear un archivo ZIP en memoria
+                zip_stream = io.BytesIO()
+                with zipfile.ZipFile(zip_stream, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                    for name, data in images_data:
+                        zipf.writestr(name, data)
+                
+                zip_stream.seek(0)
+                os.remove(filepath)  # Eliminar el archivo temporal después de usarlo
                 
                 # Enviar el archivo ZIP al navegador
-                return send_file(zip_path, as_attachment=True)
+                return send_file(
+                    zip_stream,
+                    as_attachment=True,
+                    download_name='processed_images.zip',
+                    mimetype='application/zip'
+                )
             except ValueError as e:
                 return str(e)
     return render_template('upload.html')

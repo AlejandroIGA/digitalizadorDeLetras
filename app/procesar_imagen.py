@@ -1,10 +1,13 @@
 import cv2
-import os
 import numpy as np
+import io
 
 def procesar_imagen(ruta_imagen):
     # Cargar la imagen
     img = cv2.imread(ruta_imagen)
+    if img is None:
+        raise ValueError(f"No se pudo cargar la imagen en la ruta: {ruta_imagen}")
+    
     resizedImg = rescaleFrame(img)  # Llamar a una función de redimensión
     
     # Convertir a escala de grises
@@ -15,7 +18,7 @@ def procesar_imagen(ruta_imagen):
     contours, hierarchy = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     i = 0
-    image_paths = []
+    images_data = []
     # Procesar contornos según el área o la jerarquía
     for cnt in contours:
         x, y, w, h = cv2.boundingRect(cnt)
@@ -25,18 +28,16 @@ def procesar_imagen(ruta_imagen):
         resized_image = cv2.resize(crop_img, None, fx=scale_factor, fy=scale_factor, 
                                    interpolation=cv2.INTER_LINEAR)
             
-        # Guardar cada contorno como imagen procesada
-        image_path = f"uploads/contour_{i}.jpg"
-        cv2.imwrite(image_path, resized_image)
-        image_paths.append(image_path)
+        # Guardar la imagen procesada en memoria
+        _, buffer = cv2.imencode('.jpg', resized_image)
+        images_data.append((f"contour_{i}.jpg", buffer.tobytes()))
         i += 1
     
     # Guardar la imagen procesada principal
-    main_image_path = "uploads/imagen_procesada.jpg"
-    cv2.imwrite(main_image_path, resizedImg)
-    image_paths.append(main_image_path)
+    _, main_buffer = cv2.imencode('.jpg', resizedImg)
+    images_data.append(("imagen_procesada.jpg", main_buffer.tobytes()))
     
-    return image_paths
+    return images_data
 
 def rescaleFrame(frame, scale=.55):
     width = int(frame.shape[1] * scale)
