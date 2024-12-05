@@ -2,7 +2,7 @@
 runtime = "python"
 
 [phases.setup.systemPackages]
-packages = ["mesa", "mesa-libGL", "libGL"]
+packages = ["mesa", "mesa-libGL", "libGL","python3", "python3-pip"]
 
 [phases.install]
-commands = ["pip install -r requirements.txt"]
+commands = ["pip install --no-cache-dir -r requirements.txt"]
