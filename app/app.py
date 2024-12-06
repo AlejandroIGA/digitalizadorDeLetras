@@ -51,14 +51,12 @@ def upload_file():
                 
                 # Enviar el archivo ZIP al navegador
                 response = send_file(
-                    zip_stream,
-                    as_attachment=True,
-                    download_name='processed_images.zip',
-                    mimetype='application/zip'
+                zip_stream,
+                as_attachment=True,
+                download_name='processed_images.zip',
+                mimetype='application/zip'
                 )
-                
-                # Incluir el mensaje en la respuesta (en el front puedes usar JavaScript para manejarlo)
-                response.headers['X-Success-Message'] = mensaje
+                response.headers['X-Success-Message'] = mensaje  # Añadir el mensaje como encabezado
                 return response
 
             except ValueError as e:

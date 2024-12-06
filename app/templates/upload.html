@@ -125,6 +125,14 @@
       });
 
       if (response.ok) {
+        // Obtener el mensaje del servidor desde los encabezados
+        const message = response.headers.get('X-Success-Message');
+        if (message) {
+          // Mostrar el mensaje en el frontend
+          statusMessage.textContent = message;
+          statusMessage.style.color = 'blue';
+        }
+
         const blob = await response.blob(); // Obtener el archivo como un Blob
 
         // Crear un enlace de descarga temporal
