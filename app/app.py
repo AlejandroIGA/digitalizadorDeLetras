@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import os
 import zipfile
 import io
-from app.procesar_imagen import procesar_imagen 
+from app.procesar_imagen import procesar_imagen
 from app.separarPalabras import contar_palabras
 
 app = Flask(__name__)
@@ -46,13 +46,21 @@ def upload_file():
                 zip_stream.seek(0)
                 os.remove(filepath)  # Eliminar el archivo temporal después de usarlo
                 
+                # Mensaje de éxito
+                mensaje = f'¡Archivo subido exitosamente! La imagen contiene {num_palabras} palabras.'
+                
                 # Enviar el archivo ZIP al navegador
-                return send_file(
+                response = send_file(
                     zip_stream,
                     as_attachment=True,
                     download_name='processed_images.zip',
                     mimetype='application/zip'
                 )
+                
+                # Incluir el mensaje en la respuesta (en el front puedes usar JavaScript para manejarlo)
+                response.headers['X-Success-Message'] = mensaje
+                return response
+
             except ValueError as e:
                 return str(e)
     return render_template('upload.html')
